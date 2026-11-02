@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/SteamLobbyList/lobby_entry.gd" id="1_entry"]
+
+[node name="LobbyEntry" type="HBoxContainer"]
+script = ExtResource("1_entry")
+
+[node name="Name" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Lobby"
+
+[node name="Join" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join"
