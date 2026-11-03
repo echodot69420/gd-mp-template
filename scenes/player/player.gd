@@ -6,6 +6,8 @@ extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 
+const PITCH_LIMIT := 1.5
+
 
 func _enter_tree() -> void:
 	# The node name is the peer ID, so that peer owns this player.
@@ -29,9 +31,32 @@ func _update_label() -> void:
 		name_label.text = "Player %s" % name
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	# Look around with the mouse while it is captured (i.e. not in a menu).
+	if not (event is InputEventMouseMotion):
+		return
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return
+	var motion := event as InputEventMouseMotion
+	var scale: float = Settings.look_scale()
+	rotate_y(-motion.relative.x * scale)
+	camera_3d.rotation.x = clampf(
+		camera_3d.rotation.x - motion.relative.y * scale,
+		-PITCH_LIMIT, PITCH_LIMIT)
+
+
 func _physics_process(delta: float) -> void:
 	# Remote players are driven by the MultiplayerSynchronizer instead.
 	if not is_multiplayer_authority():
+		return
+
+	# The in-game menu freezes this player while it is open.
+	if _menu_open():
+		velocity.x = 0.0
+		velocity.z = 0.0
 		return
 
 	# Add the gravity.
@@ -39,11 +64,11 @@ func _physics_process(delta: float) -> void:
 		velocity += get_gravity() * delta
 
 	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	# Get the input direction and handle the movement/deceleration.
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * SPEED
@@ -53,3 +78,8 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
+
+
+func _menu_open() -> bool:
+	var menu = get_tree().get_first_node_in_group("game_menu")
+	return menu != null and menu.visible

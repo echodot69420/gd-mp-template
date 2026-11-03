@@ -291,15 +291,23 @@ func _test_process() -> void:
 
 ## The host presses "right" so the client can observe the replicated movement.
 func _hold_right_key() -> void:
+	# Use whatever key is currently bound to "move_right" (D by default).
+	var keycode: Key = KEY_D
+	for bound in InputMap.action_get_events("move_right"):
+		if bound is InputEventKey:
+			var key := bound as InputEventKey
+			keycode = key.physical_keycode if key.physical_keycode != KEY_NONE else key.keycode
+			break
+
 	var down := InputEventKey.new()
-	down.keycode = KEY_RIGHT
-	down.physical_keycode = KEY_RIGHT
+	down.keycode = keycode
+	down.physical_keycode = keycode
 	down.pressed = true
 	Input.parse_input_event(down)
 	await get_tree().create_timer(3.0).timeout
 	var up := InputEventKey.new()
-	up.keycode = KEY_RIGHT
-	up.physical_keycode = KEY_RIGHT
+	up.keycode = keycode
+	up.physical_keycode = keycode
 	up.pressed = false
 	Input.parse_input_event(up)
 

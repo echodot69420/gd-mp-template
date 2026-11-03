@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://cgqdbxerm1gpi"]
+[gd_scene load_steps=8 format=3 uid="uid://cgqdbxerm1gpi"]
 
 [ext_resource type="Script" uid="uid://xjst0i1fr4gc" path="res://main/main.gd" id="1_53q0u"]
 [ext_resource type="Script" uid="uid://bnk6vaol0g12o" path="res://scripts/player_spawner.gd" id="2_pjrb6"]
 [ext_resource type="PackedScene" uid="uid://dt21p15rxdsfk" path="res://scenes/player/Player.tscn" id="3_xwkvk"]
+[ext_resource type="PackedScene" path="res://main/pause_menu.tscn" id="4_pmenu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pjrb6"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -52,5 +53,7 @@ offset_left = 16.0
 offset_top = 12.0
 offset_right = 416.0
 offset_bottom = 44.0
-text = "Esc - Leave the match"
+text = "Esc - Menu"
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("4_pmenu")]
 
